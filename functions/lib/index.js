@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.photo = exports.poi = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const params_1 = require("firebase-functions/params");
-const firebase_functions_1 = require("firebase-functions");
+const logger_1 = require("firebase-functions/logger");
 const schema_1 = require("./lib/schema");
 const google_1 = require("./lib/google");
 const util_1 = require("./lib/util");
@@ -81,7 +81,7 @@ exports.poi = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KEY]
         const query = prompt && prompt.trim().length > 0 ? prompt.trim() : "cafe";
         const apiKey = PLACES_API_KEY.value();
         if (!apiKey) {
-            firebase_functions_1.logger.error("Missing PLACES_API_KEY secret");
+            logger_1.logger.error("Missing PLACES_API_KEY secret");
             res.status(500).json({ error: "Server not configured" });
             return;
         }
@@ -96,7 +96,7 @@ exports.poi = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KEY]
             return;
         }
         if (ts.status !== "OK" && ts.status !== "ZERO_RESULTS") {
-            firebase_functions_1.logger.warn("Text Search non-OK", ts);
+            logger_1.logger.warn("Text Search non-OK", ts);
         }
         const selected = selectBestPlace(ts.results);
         if (!selected) {
@@ -105,7 +105,7 @@ exports.poi = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KEY]
         }
         const pd = await (0, google_1.placeDetails)({ placeId: selected.place_id, apiKey });
         if (pd.status !== "OK" || !pd.result) {
-            firebase_functions_1.logger.error("Place details failed", pd);
+            logger_1.logger.error("Place details failed", pd);
             res.status(500).json({ error: "Failed to fetch place details" });
             return;
         }
@@ -131,7 +131,7 @@ exports.poi = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KEY]
         res.status(200).json(payload);
     }
     catch (err) {
-        firebase_functions_1.logger.error("Unhandled error in /poi", err);
+        logger_1.logger.error("Unhandled error in /poi", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -180,7 +180,7 @@ exports.photo = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KE
         const { ref, maxwidth = 1200 } = parse.data;
         const apiKey = PLACES_API_KEY.value();
         if (!apiKey) {
-            firebase_functions_1.logger.error("Missing PLACES_API_KEY secret");
+            logger_1.logger.error("Missing PLACES_API_KEY secret");
             res.status(500).json({ error: "Server not configured" });
             return;
         }
@@ -189,7 +189,7 @@ exports.photo = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KE
         const upstream = await fetch(url, { redirect: "follow" });
         if (!upstream.ok) {
             const text = await upstream.text().catch(() => "");
-            firebase_functions_1.logger.error("Photo proxy upstream error", { status: upstream.status, text });
+            logger_1.logger.error("Photo proxy upstream error", { status: upstream.status, text });
             res.status(502).json({ error: "Failed to fetch photo" });
             return;
         }
@@ -200,7 +200,7 @@ exports.photo = (0, https_1.onRequest)({ region: REGION, secrets: [PLACES_API_KE
         res.status(200).send(buffer);
     }
     catch (err) {
-        firebase_functions_1.logger.error("Unhandled error in /photo", err);
+        logger_1.logger.error("Unhandled error in /photo", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });

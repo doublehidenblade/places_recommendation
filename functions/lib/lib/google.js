@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.textSearch = textSearch;
 exports.placeDetails = placeDetails;
-const firebase_functions_1 = require("firebase-functions");
+const logger_1 = require("firebase-functions/logger");
 const PLACES_BASE = "https://maps.googleapis.com/maps/api/place";
 async function textSearch(args) {
     const { query, location, radius, apiKey } = args;
@@ -16,7 +16,7 @@ async function textSearch(args) {
     const res = await fetch(url, { redirect: "follow" });
     if (!res.ok) {
         const text = await res.text().catch(() => "");
-        firebase_functions_1.logger.error("Text Search HTTP error", { status: res.status, text });
+        logger_1.logger.error("Text Search HTTP error", { status: res.status, text });
         throw new Error(`Text Search failed with status ${res.status}`);
     }
     const data = (await res.json());
@@ -39,7 +39,7 @@ async function placeDetails(args) {
     const res = await fetch(url, { redirect: "follow" });
     if (!res.ok) {
         const text = await res.text().catch(() => "");
-        firebase_functions_1.logger.error("Place Details HTTP error", { status: res.status, text });
+        logger_1.logger.error("Place Details HTTP error", { status: res.status, text });
         throw new Error(`Place Details failed with status ${res.status}`);
     }
     const data = (await res.json());

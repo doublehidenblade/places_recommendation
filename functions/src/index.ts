@@ -1,6 +1,6 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
-import { logger } from "firebase-functions";
+import { logger } from "firebase-functions/logger";
 import type { Request, Response } from "express";
 import { poiQuerySchema, photoQuerySchema, formatZodError } from "./lib/schema";
 import { textSearch, placeDetails, type TextSearchPlace } from "./lib/google";
