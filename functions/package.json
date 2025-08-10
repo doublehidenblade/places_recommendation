@@ -2,7 +2,7 @@
   "name": "poi-functions",
   "description": "Firebase Functions v2 for POI API",
   "engines": {
-    "node": ">=20"
+    "node": "20"
   },
   "type": "commonjs",
   "main": "lib/index.js",
